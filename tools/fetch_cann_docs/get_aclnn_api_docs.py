@@ -51,6 +51,10 @@ REFERENCE_DIR = PROJECT_ROOT / "docs" / "cann"
 API_DOCS_DIR = REFERENCE_DIR / "aclnn_api_docs"
 INDEX_FILE = REFERENCE_DIR / "aclnn_api_index.md"
 
+SPECIAL_RENAMES: dict[str, tuple[Path, str]] = {
+    "aclnn返回码.md": (REFERENCE_DIR, "aclnnApiError.md"),
+}
+
 
 def run_git(args: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(
@@ -158,7 +162,12 @@ def collect_and_update_docs(repos: dict[str, Path]) -> dict[str, list[str]]:
         collected: list[str] = []
 
         for src in md_files:
-            dest = API_DOCS_DIR / src.name
+            if src.name in SPECIAL_RENAMES:
+                dest_dir, dest_name = SPECIAL_RENAMES[src.name]
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                dest = dest_dir / dest_name
+            else:
+                dest = API_DOCS_DIR / src.name
 
             if dest.exists():
                 if _file_md5(dest) == _file_md5(src):
@@ -169,7 +178,10 @@ def collect_and_update_docs(repos: dict[str, Path]) -> dict[str, list[str]]:
                 tag = "ADD"
 
             shutil.copy2(src, dest)
-            print(f"  [{tag}] {src.name} (from {name})")
+            if src.name in SPECIAL_RENAMES:
+                print(f"  [{tag}] {src.name} -> {dest.name} (from {name})")
+            else:
+                print(f"  [{tag}] {src.name} (from {name})")
             collected.append(src.name)
 
         repo_files_map[name] = collected

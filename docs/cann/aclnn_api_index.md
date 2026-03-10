@@ -8,13 +8,13 @@
 | Repository | Branch | Commit ID |
 | --- | --- | --- |
 | ops-cv | master | `3bbfb66ec89ad9684bff88ab8619d426734199d0` |
-| ops-math | master | `9ef87d3c3574172239653b0ad03b0729e9aa924b` |
-| ops-nn | master | `8bbc4becb68d2bfeb5f118df0da53a7650e6cc39` |
-| ops-transformer | master | `4d9f85f37d201ac18c60b81b4730e983112a949d` |
+| ops-math | master | `9127cc4edf15df6367e3239bf3bac9e7242a85d3` |
+| ops-nn | master | `253860f430986947275afee2cbfabbbffe65e718` |
+| ops-transformer | master | `915920fe4fb28dcc4f3e869fa0f8de293845d1fe` |
 
 ## API Document List
 
-Total: **996** API(s) from **887** document(s).
+Total: **995** API(s) from **886** document(s).
 
 | API | Document | Source |
 | --- | --- | --- |
@@ -1013,4 +1013,3 @@ Total: **996** API(s) from **887** document(s).
 | aclnnXLogYScalarOther | [aclnnXLogYScalarOther&aclnnInplaceXLogYScalarOther.md](aclnn_api_docs/aclnnXLogYScalarOther&aclnnInplaceXLogYScalarOther.md) | ops-math |
 | aclnnXLogYScalarSelf | [aclnnXLogYScalarSelf.md](aclnn_api_docs/aclnnXLogYScalarSelf.md) | ops-math |
 | aclnnXLogYTensor | [aclnnXLogYTensor&aclnnInplaceXLogYTensor.md](aclnn_api_docs/aclnnXLogYTensor&aclnnInplaceXLogYTensor.md) | ops-math |
-| aclnn返回码 | [aclnn返回码.md](aclnn_api_docs/aclnn返回码.md) | ops-cv |
