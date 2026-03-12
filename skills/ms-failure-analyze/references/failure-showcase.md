@@ -16,7 +16,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Out of Memory (Ascend HBM)
 - failure_info: "EL0004, 200000, 207018, RuntimeError, out of memory, device memory exhausted"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "platform"
 - root_cause: "Ascend HBM memory exhausted due to large tensors, batch size, or graph memory fragmentation"
@@ -26,7 +26,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Out of Memory (GPU VRAM)
 - failure_info: "CUDA out of memory, RuntimeError, CUDA error"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "gpu"
 - failure_type: "platform"
 - root_cause: "GPU VRAM exhausted due to large model or batch size"
@@ -36,7 +36,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Missing CANN Environment
 - failure_info: "libascendcl.so not found, ImportError, cannot find CANN, ASCEND_OPP_PATH"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "scripts"
 - root_cause: "CANN environment variables not set or CANN not installed"
@@ -46,7 +46,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Device Target Mismatch
 - failure_info: "RuntimeError, device_target, should be one of, Ascend GPU CPU, invalid device"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "set_context device_target does not match available hardware or is misspelled"
@@ -56,7 +56,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Graph Compilation Error (Static Graph)
 - failure_info: "RuntimeError, graph compile, type inference, abstract type, infer failed"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "framework"
 - root_cause: "MindSpore GRAPH_MODE cannot compile construct() due to unsupported Python syntax, dynamic control flow, or type inference failure"
@@ -66,7 +66,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Operator Not Supported on Backend
 - failure_info: "RuntimeError, not supported, operator, backend, fallback"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "framework"
 - root_cause: "Operator/feature not implemented for target backend in current MindSpore version"
@@ -76,7 +76,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Context Empty (Ascend)
 - failure_info: "107002, context is empty, aclrtSetContext, aclrtSetDevice, RuntimeError"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "framework"
 - root_cause: "NPU context not initialized before calling NPU operations"
@@ -86,7 +86,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Device Heartbeat Lost (Ascend)
 - failure_info: "507010, lost heartbeat, RuntimeError, task scheduler, device hang"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "platform"
 - root_cause: "NPU device task scheduler heartbeat lost, device may be unresponsive"
@@ -96,7 +96,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### HBM ECC Error (Ascend)
 - failure_info: "507054, HBM ECC, multi-bit, hardware error, memory fault"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "platform"
 - root_cause: "HBM memory hardware ECC fault on Ascend device"
@@ -106,7 +106,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### HCCL Communication Error (Ascend Distributed)
 - failure_info: "HCCL, timeout, EI0002, EI0006, notify wait, socket build, distributed"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "HCCL distributed communication failure — network timeout, rank configuration error, or HCCS link issue"
@@ -116,7 +116,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### NCCL Communication Error (GPU Distributed)
 - failure_info: "NCCL error, timeout, unhandled system error, distributed, GPU"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "gpu"
 - failure_type: "backend"
 - root_cause: "NCCL distributed communication failure — network issue, GPU topology problem, or version mismatch"
@@ -126,7 +126,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### TBE Operator Compilation Error (Ascend)
 - failure_info: "TBE, compile failed, E9xxxx, EBxxxx, operator compilation, UB overflow"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "TBE operator compilation failed due to unsupported shape/dtype, UB memory overflow, or CANN version incompatibility"
@@ -136,7 +136,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Shape Inference Failure
 - failure_info: "ValueError, shape, infer, expected, dimensions, rank mismatch"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "Input tensor shape does not match operator requirements (wrong dimensions, rank mismatch)"
@@ -146,7 +146,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### AI Core Execution Timeout (Ascend)
 - failure_info: "507014, AI Core timeout, AICORE_TIMEOUT, execution timeout"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "AI Core operator execution timed out, possibly due to infinite loop in operator or hardware issue"
@@ -156,7 +156,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### Dtype Mismatch
 - failure_info: "TypeError, dtype, expected, Float32, Float16, type not match, cast"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "Tensor data types don't match operator requirements or between operands"
@@ -166,7 +166,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint View Op in GRAPH_MODE / JIT
 - failure_info: "RuntimeError, jit_view_unsupported, view, squeeze, flatten, reshape, GRAPH_MODE, graph compile"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "framework"
 - root_cause: "mint view operations (squeeze, unsqueeze, flatten, reshape, t, narrow, split, broadcast_to, permute, transpose) are decorated with @jit_view_unsupported and may fail or produce incorrect results in GRAPH_MODE / JIT compilation"
@@ -176,7 +176,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint.equal() Return Type Confusion
 - failure_info: "TypeError, AttributeError, mint.equal, bool, Tensor expected, item"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "mint.equal() returns a Python bool (not a Tensor), unlike ops.equal() which returns a Tensor; code expecting a Tensor from equal() breaks"
@@ -186,7 +186,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint.item() on Multi-Element Tensor
 - failure_info: "RuntimeError, cannot be converted to Scalar, mint.item, elements"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "mint.item() requires a single-element Tensor; calling it on a Tensor with multiple elements raises RuntimeError"
@@ -196,7 +196,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint Experimental API Removed After Upgrade
 - failure_info: "AttributeError, ImportError, module mint has no attribute, API removed, experimental"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "framework"
 - root_cause: "Many mint APIs are marked 'experimental' and may be removed or renamed across MindSpore versions; code using these APIs breaks after version upgrade"
@@ -206,7 +206,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint.nn Layer Parameter Validation
 - failure_info: "ValueError, TypeError, in_channels, out_channels, groups, Validator, mint.nn.Conv, mint.nn.BatchNorm"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "mint.nn layers (Conv, BatchNorm, etc.) use strict parameter validation via Validator; invalid params like in_channels not divisible by groups raise ValueError"
@@ -216,7 +216,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint.distributed init_process_group Failure
 - failure_info: "RuntimeError, init_process_group, TCPStore, connection refused, distributed, mint.distributed"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "all"
 - failure_type: "scripts"
 - root_cause: "mint.distributed.init_process_group failed due to TCPStore connection issues — master address/port unreachable, firewall blocking, or incorrect rank configuration"
@@ -226,7 +226,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### mint.optim FusedAdamW Not Available
 - failure_info: "RuntimeError, NotImplementedError, FusedAdamW, not supported, backend"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "cpu"
 - failure_type: "framework"
 - root_cause: "mint.optim.FusedAdamW is a performance-optimized optimizer that may not be available on all backends (especially CPU)"
@@ -236,7 +236,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### gen_ops.py YAML Build Error
 - failure_info: "gen_ops.py, KeyError, YAML, keys structure, py_method missing, function_doc"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "ACLNN operator YAML definition has incorrect field hierarchy, missing py_method, or missing function_doc entry; gen_ops.py fails during code generation"
@@ -246,7 +246,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### GeneralInfer Dynamic Shape Crash
 - failure_info: "RuntimeError, InferShape, dynamic shape, unknown, kShapeDimAny, GetScalarValue, has_value"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "C++ GeneralInfer does not handle dynamic shape/rank fallback — GetScalarValue used without checking has_value(), or no fallback for unknown dimensions"
@@ -256,7 +256,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### PyBoost Parameter Conversion Failure
 - failure_info: "RuntimeError, TypeError, PyBoost, tuple, vector, Optional, None, LAUNCH_ACLNN, parameter"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "PyBoost customize fails to convert MindSpore parameters to ACLNN-expected types: tuple[int] not converted to std::vector<int64_t>, Optional None not handled, or string not converted to enum"
@@ -266,7 +266,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### KBK Kernel Registration / Namespace Error
 - failure_info: "RuntimeError, undeclared, undefined, MS_ACLNN_KERNEL_FACTORY_REG, namespace, KBK, Graph kernel"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "KBK kernel has namespace mismatch between header and implementation, or registration macro uses wrong class name"
@@ -276,7 +276,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### BPROP Input/Output Count Mismatch
 - failure_info: "RuntimeError, bprop, gradient, input count, output count, REG_BPROP_BUILDER, backward"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "BPROP builder has wrong input/output count — backward inputs should equal forward inputs + 2 (out + dout), backward outputs should equal forward input count"
@@ -286,7 +286,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### BPROP Dynamic Value in Graph Mode
 - failure_info: "RuntimeError, bprop, Conditional, ShapeCalc, dynamic, ValueAny, graph mode, backward compile"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "BPROP builder uses C++ if/else on scalar values that may be unknown at compile time in graph mode; needs runtime branching via Conditional/ShapeCalc"
@@ -296,7 +296,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### ACLNN Composite Op Missing Sub-Operator
 - failure_info: "RuntimeError, aclnn, composite, sub-operator, missing, LAUNCH_ACLNN, call chain"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "Composite operator (maps to multiple ACLNN sub-operators) fails because one or more sub-operators are not yet adapted in MindSpore — missing YAML/Infer/PyBoost/KBK for a sub-op"
@@ -306,7 +306,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### View Op Strides Calculation Error
 - failure_info: "RuntimeError, view, strides, transpose, reshape, zero-copy, silent corruption, incorrect output"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "View operator's strides calculation function produces incorrect output shape/strides/offset; causes silent data corruption or incorrect results"
@@ -316,7 +316,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### PTA-MindSpore Parameter Mismatch
 - failure_info: "RuntimeError, ValueError, parameter mismatch, PTA, forward backward, different names, hidden parameter"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "MindSpore ACLNN adaptation has parameter alignment issues with PTA: forward/backward parameter name differences, hidden hardcoded parameters in backward, Optional None handling divergence, or output tensor count mismatch"
@@ -326,7 +326,7 @@ Historical MindSpore failures and their solutions. Format:
 
 ### aclnn_config.yaml Missing Mapping (Auto-Gen Path)
 - failure_info: "RuntimeError, aclnn_config, mapping, auto-generated, dispatch, operator not found"
-- observed_at: ""
+- observed_at: "N/A - seed entry"
 - backend: "ascend"
 - failure_type: "backend"
 - root_cause: "Auto-generated ACLNN operator (Path 1) fails because aclnn_config.yaml is missing the operator name mapping entry"
@@ -357,6 +357,18 @@ Historical MindSpore failures and their solutions. Format:
 - ACLNN view: strides, view, graph_view, REG_VIEW_STRIDES_CALC_FUN, host kernel, zero-copy
 - PTA alignment: PTA, parameter mismatch, derivatives.yaml, op_plugin_functions.yaml, hidden parameter
 
+## Observed Failures
+
+### aclnnAll/aclnnReduceSum Duplicate Dims in Axis
+- failure_info: "EZ1001, aclnnAllGetWorkspaceSize, aclnnReduceSumGetWorkspaceSize, RuntimeError, duplicate dims, Dim appears multiple times, reduce_all_aclnn_kernel, sum"
+- observed_at: "test_f_all.py:test_f_all_axis_list_int, test_f_sum.py:test_f_sum_tuple_dim_6d"
+- backend: "ascend"
+- failure_type: "scripts"
+- root_cause: "axis list contains duplicate dimensions (e.g. [-1, -1, -1] normalizes to [5, 5, 5]); CANN aclnnAll/aclnnReduceSum API rejects duplicate dims with ACLNN_ERR_PARAM_INVALID"
+- solution: "Convert test to exception case using pytest.raises(RuntimeError) to expect the error; or change axis to non-duplicate values like [0, 1, 2]; framework-side fix would be to deduplicate axis before passing to aclnn APIs"
+- last_seen: "2026-03-13"
+- occurrences: 2
+
 ## Adding New Failures
 
 When analyzing a new failure:
@@ -370,8 +382,10 @@ When analyzing a new failure:
 
 ### failure_info Guidelines
 
+**Language: English ONLY. No Chinese characters allowed anywhere in this file.**
+
 **Include:** error codes, error keywords, operators, operation patterns, exception types
-**Exclude:** test/function names, file names, variable names, specific parameter values
+**Exclude:** test/function names, file names, variable names, specific parameter values, Chinese text
 
 **Examples:**
 - OK: "507010, lost heartbeat, RuntimeError, device hang"
@@ -380,3 +394,10 @@ When analyzing a new failure:
 - BAD: "rank_table_file=/path/to/config.json"
 
 **Purpose:** Enable semantic pattern matching; use `observed_at` for specific instances.
+
+## See Also
+
+- [Error Codes](error-codes.md) — Look up error code details when a showcase entry references a code
+- [CANN API Reference](cann-api-reference.md) — ACLNN API constraints and adaptation flow
+- [Backend Diagnosis](backend-diagnosis.md) — Per-backend diagnosis steps when a showcase solution doesn't apply
+- [MindSpore API](mindspore-api.md) — API layers, execution modes, operator patterns

@@ -115,6 +115,8 @@ Applies to MindSpore running on Ascend NPU. Error code rules:
 
 ACLNN errors use a two-phase interface pattern: `aclnnXxxGetWorkspaceSize` → `aclnnXxx`.
 
+For the complete official ACLNN return code reference (including codes not listed below), see [docs/cann/aclnnApiError.md](../../../docs/cann/aclnnApiError.md). For per-API constraints and adaptation flow, see [CANN API Reference](cann-api-reference.md).
+
 ### General Status Codes
 | Code | Name | Description |
 |------|------|-------------|
@@ -232,3 +234,10 @@ CPU errors typically manifest as standard Python exceptions or system-level erro
 - MindSpore logs: controlled by `GLOG_v` environment variable
 - CANN device logs: `/var/log/npu/slog/*/device-*/plog/` (Ascend)
 - GPU logs: `nvidia-smi`, CUDA error output (GPU)
+
+## See Also
+
+- [CANN API Reference](cann-api-reference.md) — ACLNN API constraints, adaptation flow, and per-API docs
+- [Backend Diagnosis](backend-diagnosis.md) — Detailed per-backend diagnosis steps and further location techniques
+- [Failure Showcase](failure-showcase.md) — Historical failures indexed by error codes and keywords
+- [MindSpore API](mindspore-api.md) — API layers, execution modes, backend registration

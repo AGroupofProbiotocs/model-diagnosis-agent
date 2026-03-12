@@ -1,0 +1,29 @@
+{
+  "skill_name": "ms-failure-analyze",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm running training on Ascend 910B and it crashed after a few steps. Here's the log:\n\nRuntimeError: Task abort! Device execute failed, se_id=0x0, task_id=23\n[ERROR] RUNTIME(68861,python):2026-03-10-14:22:31.445 [task_stream.cc:127]68861 ReportExceptionError:model execute error, retCode=0x507010\nTask exception info: \ntask_id: 23\ntask_type: AI_CORE\nstream_id: 12\ntask_info: kernel_name=MatMul\n\nEnvironment: MindSpore 2.5.0, CANN 8.0.RC3, Python 3.9. It works fine with a small model but fails when I switch to a larger one.",
+      "expected_output": "Should: (1) recognize 507010 as heartbeat lost / device hang error from Quick Route -> Platform level; (2) check failure-showcase for matching 507010 entry; (3) suggest hardware-level diagnosis: npu-smi info, check device health, thermal throttling; (4) note that large model vs small model difference suggests possible HBM pressure or device resource limits; (5) ask user to verify fix before writing to showcase",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm adapting a new aclnn operator aclnnFoo. I wrote the YAML but gen_ops.py throws an error:\n\nKeyError: 'py_method'\n\nMy YAML looks like this:\n```yaml\nop_def:\n  name: Foo\n  dispatch:\n    enable: True\n  args:\n    - name: x\n      type: Tensor\n    - name: y\n      type: Tensor\n  returns:\n    - name: output\n      type: Tensor\n```\n\nCan you help me figure out what's wrong? MindSpore master branch, CANN 8.0.RC3.",
+      "expected_output": "Should: (1) identify as gen_ops.py YAML build error from Quick Route -> Backend (Ascend); (2) check failure-showcase for 'gen_ops.py, KeyError, YAML' match; (3) diagnose missing py_method field in api_def section; (4) suggest comparing with a working operator YAML (e.g. add); (5) mention that api_def and function_doc sections are also likely needed; (6) reference cann-api-reference.md for adaptation flow; (7) wait for user confirmation before writing to showcase",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "MindSpore threw an error, can you take a look?\n\nRuntimeError: For 'Conv2d', the 'in_channels' must be divisible by 'groups', but got in_channels: 3 and groups: 2.",
+      "expected_output": "Should: (1) trigger Stage 0 — ask for MindSpore version, backend, execution mode since not provided; (2) recognize as ValueError/parameter validation from Quick Route -> Scripts level; (3) check failure-showcase for mint.nn parameter validation match; (4) provide direct fix: in_channels must be divisible by groups (3 is not divisible by 2); (5) suggest changing groups to 1 or 3, or changing in_channels; (6) ask user to confirm resolution",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "MindSporeTest ST case test_f_all_axis_list_int failed on Ascend. The test does:\n\n```python\nx = Tensor(np.random.randn(3, 3, 3), mstype.float32)\naxis = [-1, -1, -1]\nkeep_dims = False\nresult = ops.all(x, axis=axis, keep_dims=keep_dims)\n```\n\nError log:\n\nRuntimeError: aclnnAllGetWorkspaceSize call failed, please check!\n\n----------------------------------------------------\n- Ascend Error Message:\n----------------------------------------------------\nEZ1001: [PID: 2942910] 2025-09-05-01:37:17.462.248 Dim 2 appears multiple times in the list of dims.[THREAD:2942910]\n\n(Please search \"CANN Common Error Analysis\" at https://www.mindspore.cn/en for error code description)\n\n----------------------------------------------------\n- C++ Call Stack: (For framework developers)\n----------------------------------------------------\nmindspore/ops/kernel/ascend/aclnn/kernel_mod_impl/customize/reduce_all_aclnn_kernel.h:37 operator()\n\nEnvironment: MindSpore master, CANN 8.0.RC3, Python 3.10, Ascend 910B. CONTEXT_DEVICE_TARGET=Ascend, CONTEXT_MODE=1.",
+      "expected_output": "Should: (1) recognize EZ1001 as CANN inner error code -> Quick Route to Backend (Ascend); (2) match failure-showcase entry 'aclnnAll Duplicate Dims in Axis' which is an exact match; (3) identify root cause: axis=[-1,-1,-1] all resolve to dim 2, creating duplicate dims that aclnnAll rejects at GetWorkspaceSize phase; (4) classify as scripts-level issue (test input is invalid, not a framework bug); (5) suggest fix: deduplicate axis before passing to CANN, or wrap with pytest.raises to mark as expected-error test; (6) ask user to confirm resolution before updating showcase",
+      "files": []
+    }
+  ]
+}

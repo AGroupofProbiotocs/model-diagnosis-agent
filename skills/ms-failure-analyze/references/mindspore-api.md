@@ -321,32 +321,29 @@ export MS_DEV_FORCE_ACL=1          # Force ACL execution
 ms.set_context(save_graphs=True, save_graphs_path="./graphs")
 ```
 
-## Source Code Locations
+## Source Code Search Guide
 
-```
-mindspore/python/mindspore/
-├── mint/                    # ← Primary API (PyTorch-compatible)
-│   ├── __init__.py          # Top-level mint functions
-│   ├── nn/
-│   │   ├── __init__.py      # NN layer exports
-│   │   ├── functional.py    # Functional NN APIs
-│   │   └── layer/
-│   │       ├── conv.py          # Conv1d/2d/3d, ConvTranspose2d
-│   │       ├── normalization.py # BatchNorm, LayerNorm, GroupNorm
-│   │       ├── activation.py    # ReLU, GELU, SiLU, etc.
-│   │       ├── pooling.py       # MaxPool, AvgPool, AdaptivePool
-│   │       ├── padding.py       # ConstantPad, ZeroPad, etc.
-│   │       └── basic.py         # Flatten
-│   ├── optim/               # Optimizers
-│   ├── linalg/              # Linear algebra
-│   ├── special/             # Special functions
-│   └── distributed/         # Collective communication
-├── ops/                     # Lower-level operators
-│   ├── operations/          # Primitive definitions
-│   ├── function/            # Functional API wrappers
-│   ├── auto_generate/       # Auto-generated ops
-│   └── op_info_register.py  # Backend registration
-├── nn/                      # Traditional NN modules
-│   └── layer/
-└── context.py               # Context management
-```
+Directory structures may change across MindSpore versions. Use keyword search instead of hardcoded paths:
+
+| Component | Search Keywords / Patterns |
+|-----------|--------------------------|
+| mint top-level functions | `mindspore/mint/__init__.py` or search `def <func_name>` under `mint/` |
+| mint.nn layers | search `class <LayerName>` under `mint/nn/layer/` |
+| mint.nn.functional | search `def <func_name>` in `mint/nn/functional.py` |
+| mint.optim | search `class <OptimizerName>` under `mint/optim/` |
+| mint.linalg / special / distributed | search under `mint/linalg/`, `mint/special/`, `mint/distributed/` |
+| ops functional API | search `def <func_name>` under `ops/function/` |
+| ops Primitive classes | search `class <OpName>` under `ops/operations/` |
+| Auto-generated ops | search under `ops/auto_generate/` |
+| Backend registration | search `op_info_register` or `RegOp` |
+| nn traditional modules | search `class <LayerName>` under `nn/layer/` |
+| Context management | search `set_context` or `get_context` in `context.py` |
+| YAML op definitions | search `<op_name>` under `ops/op_def/yaml/` |
+| ACLNN bindings | search `LAUNCH_ACLNN` or `MS_ACLNN_KERNEL_FACTORY_REG` |
+
+## See Also
+
+- [Error Codes](error-codes.md) — Error code mappings for MindSpore exceptions, CANN, ACLNN, CUDA
+- [CANN API Reference](cann-api-reference.md) — ACLNN two-phase interface, adaptation flow, operator diagnostics
+- [Backend Diagnosis](backend-diagnosis.md) — Per-backend diagnosis steps (Ascend/GPU/CPU)
+- [Failure Showcase](failure-showcase.md) — Historical failures and solutions

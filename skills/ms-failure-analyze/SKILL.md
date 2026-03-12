@@ -1,13 +1,44 @@
 ---
 name: ms-failure-analyze
-description: "MindSpore failure analyzer for Ascend/GPU/CPU backends. Use this skill whenever users report ANY MindSpore error, crash, or unexpected behavior — even if they don't know the root cause. Triggers for: (1) Error codes: CANN 1xxxxx-5xxxxx, ACLNN 161xxx/361xxx/561xxx, CANN inner E[x]xxxx, CUDA errors, NCCL errors; (2) Python exceptions: RuntimeError, ValueError, TypeError, MemoryError from MindSpore; (3) Device issues: OOM, heartbeat lost, ECC errors, device hang on Ascend/GPU; (4) Framework issues: graph compilation, type inference, operator not supported, set_context problems, GRAPH_MODE/PYNATIVE_MODE errors; (5) API issues: mindspore.mint (mint.nn/optim/linalg/distributed), mindspore.ops, view-vs-copy, jit_view_unsupported; (6) ACLNN adaptation: gen_ops.py YAML errors, GeneralInfer failures, PyBoost/KBK issues, BPROP wiring, composite op chains, View strides errors, PTA alignment; (7) Test failures: MindSporeTest repo ST/UT failures with CONTEXT_DEVICE_TARGET/CONTEXT_MODE/CONTEXT_JIT_LEVEL. Also use when users paste error logs, stack traces, or CANN debug output and need help interpreting them."
+description: "MindSpore failure analyzer for Ascend/GPU/CPU backends. Use whenever users report ANY MindSpore error, crash, or unexpected behavior — including error codes (CANN, ACLNN, CUDA, NCCL), Python exceptions, device issues (OOM, heartbeat, ECC), graph compilation failures, operator errors, mint/ops API issues, ACLNN adaptation problems (gen_ops.py, PyBoost, KBK, BPROP), or MindSporeTest ST/UT failures. Also use when users paste error logs, stack traces, or CANN debug output."
 ---
 
 # MS (MindSpore) Failure Analyzer
 
+## Stage 0: Gather Context
+
+Before diving into diagnosis, ensure you have the minimum context. If any of these are missing from the user's report, ask for them upfront — it saves multiple round-trips later.
+
+| Info | Why It Matters | How to Get |
+|------|---------------|------------|
+| MindSpore version | API/behavior changes across versions | `python -c "import mindspore; print(mindspore.__version__)"` |
+| Backend & device | Determines which error code system applies | `device_target` in `set_context()` or `CONTEXT_DEVICE_TARGET` env var |
+| CANN version (Ascend) or CUDA version (GPU) | Version mismatch is the #1 silent failure source | `cat /usr/local/Ascend/ascend-toolkit/version` or `nvcc --version` |
+| Execution mode | GRAPH_MODE vs PYNATIVE_MODE have different failure patterns | `mode` in `set_context()` or `CONTEXT_MODE` env var |
+| Complete error message | Truncated logs hide the real root cause | Ask for full traceback if only a snippet is provided |
+
+If the user provides a clear error with sufficient context, skip directly to Stage 1.
+
 ## Stage 1: Find Similar Problem
 
-### 1. Identify Error Pattern
+### 1. Check Failure Showcase (check history FIRST)
+
+Before analyzing the error in detail, search [Failure Showcase](references/failure-showcase.md) for matching patterns:
+- Error keywords (OOM, timeout, ECC, link error, compile failed, etc.)
+- Call stack patterns (operator names, functions, graph nodes)
+- Backend + module combinations (Ascend+HCCL, GPU+NCCL, graph compile, etc.)
+- Execution mode issues (GRAPH_MODE vs PYNATIVE_MODE)
+
+If matching failure found:
+1. Show historical failure info
+2. Provide previously successful solution
+3. Ask user: "Does this solution work for your issue?"
+4. If yes → END Stage 1 (skip error code analysis entirely)
+5. If no → continue to step 2 (Identify Error Pattern)
+
+If no match found → continue to step 2.
+
+### 2. Identify Error Pattern
 
 Parse error message to determine error source. MindSpore errors come in several forms:
 
@@ -40,23 +71,8 @@ Parse error message to determine error source. MindSpore errors come in several 
 If error code found:
 1. Extract error code/exception type and context
 2. Check [Error Codes reference](references/error-codes.md) for known solutions
-3. If direct match → provide solution
+3. If direct match → provide solution, then ask user: "Did this resolve your issue?" (same verification loop as Stage 2 Step 3 — do not skip validation just because the match looks obvious)
 4. If partial match → proceed to Stage 2
-
-### 2. Check Failure Showcase
-
-Search failure showcase for matching patterns:
-- Error keywords (OOM, timeout, ECC, link error, compile failed, etc.)
-- Call stack patterns (operator names, functions, graph nodes)
-- Backend + module combinations (Ascend+HCCL, GPU+NCCL, graph compile, etc.)
-- Execution mode issues (GRAPH_MODE vs PYNATIVE_MODE)
-
-If matching failure found:
-1. Show historical failure info
-2. Provide previously successful solution
-3. Ask user: "Does this solution work for your issue?"
-4. If yes → END Stage 1
-5. If no → proceed to Stage 2
 
 ## Stage 2: Analyze Failure
 
@@ -164,61 +180,16 @@ Apply orientation strategy (start at the level identified by Quick Route, then e
 - Read [MindSpore API reference](references/mindspore-api.md) for API details (includes mint, ops, nn)
 - If framework issue → Provide framework fix → Validate with user
 
-**Backend Level (Ascend):**
-- Parse CANN error codes using [Error Codes reference](references/error-codes.md)
-- Parse ACLNN error codes for operator-level failures
-- Check CANN logs: `/var/log/npu/slog/*/device-*/plog/`
-- Check TBE/AKG compilation errors
-- Cross-reference with [CANN API Reference](references/cann-api-reference.md) for aclnn API constraints and adaptation flow
-- **ACLNN adaptation-level diagnosis** (when error originates from operator development/adaptation):
-  - Determine which adaptation path the operator uses (auto-generated vs Customize):
-    - Auto-generated: YAML `dispatch.enable: True` without `Ascend:` field → check `aclnn_config.yaml` mapping
-    - Customize: YAML has `dispatch.Ascend: XxxAscend` → check PyBoost customize `.cc` and KBK kernel `.cc`
-  - Check common ACLNN integration failure points:
-    - **gen_ops.py errors**: YAML field structure mismatch, missing `py_method`, missing function_doc entries
-    - **GeneralInfer (C++ shape/type inference)**: dynamic shape/rank handling, incorrect output shape, missing unknown-value fallback
-    - **PyBoost (Pynative)**: parameter conversion issues (tuple→vector, Optional None handling, str→enum)
-    - **KBK (Graph kernel)**: Init/Resize/Launch separation issues, workspace allocation, `MS_ACLNN_KERNEL_FACTORY_REG` registration
-    - **BPROP**: input/output count mismatch (backward inputs = forward inputs + 2), unused input marking, dynamic shape in bprop (`Conditional`/`ShapeCalc` missing)
-    - **View ops**: strides calculation errors, `view: True`/`graph_view: True` YAML misconfiguration, fallback to ACLNN kernel
-    - **Composite ops**: missing sub-operators in ACLNN call chain, `bprop_expander: False` without proper sub-op bprop
-  - Read [ACLNN Adaptation Reference](references/cann-api-reference.md) for detailed adaptation flow
-- If CANN issue → Provide CANN-specific fix → Validate with user
+**Backend Level (Ascend / GPU / CPU):**
 
-**Backend Level (GPU):**
-- Parse CUDA error codes using [Error Codes reference](references/error-codes.md) — GPU/CUDA/NCCL/cuDNN sections
-- Check CUDA errors: enable synchronous execution with `CUDA_LAUNCH_BLOCKING=1` to pinpoint exact failing operation
-- Check GPU memory: `nvidia-smi` for VRAM usage; CUDA OOM → reduce batch size, use gradient checkpointing, or `torch.cuda.empty_cache()` equivalent
-- Check NCCL errors for distributed training:
-  - Enable NCCL debug: `export NCCL_DEBUG=INFO`
-  - Check GPU topology: `nvidia-smi topo -m`
-  - Verify all ranks use consistent arguments for collective operations
-- Check cuDNN errors: dtype/format not supported, workspace allocation failure
-- Verify CUDA compute capability matches compiled MindSpore (e.g., sm_70 for V100, sm_80 for A100)
-- If GPU issue → Provide GPU-specific fix → Validate with user
-
-**Backend Level (CPU):**
-- Check system resource limits: `free -h` for memory, `ulimit -a` for file descriptors and stack size
-- Verify CPU operator implementation availability — check `Supported Platforms` in operator docs
-- Check threading configuration:
-  - `OMP_NUM_THREADS` — OpenMP thread count (may conflict with MindSpore internal threads)
-  - `MS_WORKER_NUM` — MindSpore data loading worker count
-  - Over-subscription (total threads > CPU cores) causes severe slowdown
-- Check for segfaults: often caused by version mismatch between MindSpore and system libraries, or corrupt tensor data
-- CPU operators may have different numerical behavior than Ascend/GPU — use larger tolerance for cross-backend comparison
-- If CPU issue → Provide CPU-specific fix → Validate with user
+Read the matching section in [Backend Diagnosis Reference](references/backend-diagnosis.md) for detailed steps:
+- **Ascend** — CANN/ACLNN error codes, CANN logs, TBE/AKG compilation, ACLNN adaptation-level diagnosis (gen_ops.py → GeneralInfer → PyBoost/KBK → BPROP → View/Composite)
+- **GPU** — CUDA errors (`CUDA_LAUNCH_BLOCKING=1`), NCCL distributed, cuDNN, compute capability
+- **CPU** — System resources, operator availability, threading config, segfault diagnosis
 
 **MindSpore Framework Log Analysis:**
-- **GLOG output** (controlled by `GLOG_v`): search for key patterns when analyzing MindSpore framework logs:
-  ```bash
-  grep -i "error\|exception\|fail\|abort" mindspore.log | head -30
-  grep -i "infer shape\|infer type\|abstract" mindspore.log | head -20
-  grep -i "select kernel\|launch kernel\|not supported" mindspore.log | head -20
-  ```
-- **Graph dump analysis** (when `save_graphs=True`): check IR files in `save_graphs_path`:
-  - `*_validate.ir` — after graph validation (check for type/shape errors)
-  - `*_optimize.ir` — after optimization passes (check for failed optimizations)
-  - Look for `%para` (parameters), `%load` (weight loading), operator nodes with error annotations
+
+Read [Backend Diagnosis Reference — Log Analysis](references/backend-diagnosis.md#mindspore-framework-log-analysis) for GLOG patterns and graph dump analysis.
 
 **Show Fix Advice:**
 
@@ -239,52 +210,28 @@ Further Location:
   [Specific debug steps with env vars, log commands, or debug patches]
 ```
 
-**Further location techniques by level:**
+**Further location techniques:** Read [Backend Diagnosis Reference — Further Location Techniques](references/backend-diagnosis.md#further-location-techniques) for CANN debug log analysis and MindSpore debug patch guidelines.
 
-- **CANN Level:** Enable CANN debug logs to stdout:
-  ```bash
-  export ASCEND_GLOBAL_LOG_LEVEL=0       # 0=DEBUG, 1=INFO, 2=WARNING, 3=ERROR
-  export ASCEND_SLOG_PRINT_TO_STDOUT=1   # print CANN logs to stdout
-  ```
-  Then ask user to re-run and provide the debug log output.
-  **When user provides CANN debug logs:** Do NOT read the full log (can be extremely large). Instead, search for key patterns first:
-  ```bash
-  grep -i "error\|fail\|exception\|abort" cann_debug.log | head -50
-  grep -i "aclnn\|acl_error\|ret=" cann_debug.log | tail -30
-  grep -i "EE\|EI\|EJ\|EH\|EP" cann_debug.log | head -20
-  ```
-  Start from error/failure lines, then read surrounding context only as needed to trace the call chain.
+### Step 3: Validate and Iterate
 
-- **MindSpore Framework Level:** Provide a **debug patch** that adds targeted logging
-  (e.g., `MS_LOG(ERROR)` / `MS_LOG(INFO)` at suspected failure points, or Python `logger.error()` / `print()` in framework code).
+After showing fix advice, ask user: "Did this resolve your issue?"
 
-- **Debug patch requirements:**
-  1. Generate the patch using `git diff` or `diff -u` format so user can apply it directly
-  2. Verify the patch can be applied cleanly using `patch --dry-run -p1 < debug.patch` or `git apply --check debug.patch`
-  3. The patch should be minimal — only add logging/debug statements at suspected failure points
-  4. Include clear instructions: which repo/branch to apply against, how to apply, and what output to look for
-  5. After user provides debug output, analyze it and narrow down root cause
+Handle response:
+- **User confirms fixed** → Proceed to Stage 3
+- **User says not fixed** → Loop back to Step 2 with new evidence
+- **User provides debug output** → Analyze, refine, show updated advice, ask again
+- **User asks to implement fix** → Execute the fix, then **re-ask** validation question (see below)
+- **User changes topic** → Ask about original issue first, then handle new topic
 
-  Debug patch output template:
-  ```
-  Debug Patch (apply to [repo] [branch]):
+**Why verification matters — do not skip this step:**
 
-  [git diff / unified diff content]
+Writing an unverified fix into failure-showcase.md creates false knowledge that misleads all future diagnoses. A proposed fix may look correct but fail in the user's actual environment due to version differences, edge cases, or misidentified root causes. The cost of recording a wrong solution far exceeds the cost of one extra confirmation round-trip.
 
-  Apply: patch -p1 < debug.patch  (or: git apply debug.patch)
-  Verify: patch --dry-run -p1 < debug.patch  (or: git apply --check debug.patch)
-  Expected output to look for: [description of key log lines]
-  ```
-
-### Step 3: Validate and Iterate (MANDATORY — must NOT be skipped)
-
-After providing fix or further location advice:
-1. **MUST** ask user: "Did this advice resolve your issue?" — do NOT proceed without user confirmation
-   - Yes → Proceed to Stage 3
-   - No → Collect additional evidence, re-orient at current or deeper level
-   - User provided debug output → Analyze the new evidence, refine diagnosis, loop back to Step 2
-2. Never end Stage 2 unless user explicitly confirms the issue is resolved
-3. This step is **not optional** — every fix/debug suggestion must be validated before moving on
+Therefore, after showing fix advice or executing a code change at the user's request, always re-ask the validation question: "Change applied. Please verify in your test environment — did this resolve the issue?" Only proceed to Stage 3 (Accumulate Experience) after the user explicitly confirms resolution (e.g., "resolved", "passed", "fixed", "works now"). Until then:
+- Do not write or update failure-showcase.md
+- Do not declare the diagnosis complete
+- Do not move on to a different problem
+- If the user ignores the question, ask again
 
 ## Stage 3: Accumulate Experience
 
@@ -332,6 +279,7 @@ First, search [Failure Showcase reference](references/failure-showcase.md) for m
 - [Failure Showcase](references/failure-showcase.md) - Historical failures and solutions
 - [MindSpore API](references/mindspore-api.md) - API system (mint/ops/nn), backend registration, operator patterns
 - [CANN API Reference](references/cann-api-reference.md) - CANN aclnn API index and documentation pointers
+- [Backend Diagnosis](references/backend-diagnosis.md) - Per-backend (Ascend/GPU/CPU) detailed diagnosis, log analysis, further location techniques
 
 ## Diagnostic Commands
 

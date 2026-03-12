@@ -33,6 +33,16 @@ The full aclnn API documentation is available in the project's docs directory:
 - **Index:** [docs/cann/aclnn_api_index.md](../../../docs/cann/aclnn_api_index.md) — 995 aclnn APIs
 - **Individual API docs:** [docs/cann/aclnn_api_docs/](../../../docs/cann/aclnn_api_docs/) — Per-API documentation
 
+### `aclnn_api_docs` Content Summary (Read-on-Demand)
+
+`docs/cann/aclnn_api_docs/` stores per-API specification files (one or a few closely related APIs per document), typically covering:
+- API prototype(s) and two-phase interfaces (`GetWorkspaceSize` + execute)
+- Input/output constraints (shape, dtype, layout, device support, optional params)
+- Attribute semantics and parameter rules (default behavior, valid ranges)
+- Return status and common failure conditions
+
+To keep diagnosis efficient, **do not read all API docs upfront**. Only when a specific API detail is needed, first look it up in [docs/cann/aclnn_api_index.md](../../../docs/cann/aclnn_api_index.md), then open the corresponding file under `aclnn_api_docs/`.
+
 ### API Categories
 
 | Source | Category | Example APIs |
@@ -310,3 +320,11 @@ Common PTA-vs-MindSpore discrepancies:
 - Hidden hardcoded parameters in backward (e.g., `deterministic=true`)
 - Optional None handling differences (empty tensor vs null)
 - Output tensor count/shape differences
+
+## See Also
+
+- [Error Codes](error-codes.md) — ACLNN error code table (161xxx/361xxx/561xxx) and full CANN/CUDA code mappings
+- [Backend Diagnosis](backend-diagnosis.md) — Step-by-step Ascend/GPU/CPU diagnosis and further location techniques
+- [MindSpore API](mindspore-api.md) — API layers (mint/ops/nn), execution modes, backend registration
+- [Failure Showcase](failure-showcase.md) — Historical failures indexed by error keywords
+- Only read the full adaptation development guide [docs/mindspore/mindspore_aclnn_api_adaptation.md](../../../docs/mindspore/mindspore_aclnn_api_adaptation.md) when helping users write or review new operator adaptations — not needed for routine error diagnosis
